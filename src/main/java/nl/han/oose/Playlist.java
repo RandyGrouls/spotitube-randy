@@ -1,16 +1,18 @@
 package nl.han.oose;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 
-@Path("/playlists")
 public class Playlist {
+    private int id;
+    private String name;
+    private Boolean owner;
+    private ArrayList<Track> tracks;
 
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getAllPlaylists(@QueryParam("token") String userToken) {
-        System.out.println(userToken);
-        return null;
+
+    public Playlist(int id, String name, Boolean owner, ArrayList<Track> tracks) {
+        this.id = id;
+        this.name = name;
+        this.owner = owner;
+        this.tracks = tracks;
     }
 }
