@@ -9,10 +9,46 @@ public class Playlist {
     private ArrayList<Track> tracks;
 
 
+    public Playlist() {
+
+    }
+
     public Playlist(int id, String name, Boolean owner, ArrayList<Track> tracks) {
         this.id = id;
         this.name = name;
         this.owner = owner;
+        this.tracks = tracks;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Boolean getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Boolean owner) {
+        this.owner = owner;
+    }
+
+    public ArrayList<Track> getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(ArrayList<Track> tracks) {
         this.tracks = tracks;
     }
 }

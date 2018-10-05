@@ -3,12 +3,26 @@ package nl.han.oose;
 import java.util.ArrayList;
 
 public class Playlists {
-    private ArrayList<Playlist> playlists;
-    private int duration;
+    private ArrayList<Playlist> playlists = new ArrayList<>();
+    private int length;
+
 
     public Playlists() {
-        playlists.add(new Playlist(1, "Death metal", true, new ArrayList<>()));
-        playlists.add(new Playlist(1, "Pop", true, new ArrayList<>()));
-        this.duration = 12345;
+    }
+
+    public ArrayList<Playlist> getPlaylists() {
+        return playlists;
+    }
+
+    public void setPlaylists(ArrayList<Playlist> playlists) {
+        this.playlists = playlists;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 }
