@@ -1,4 +1,4 @@
-package nl.han.oose.Service.Login;
+package nl.han.oose.service.login;
 
 import nl.han.oose.Account;
 import nl.han.oose.UserToken;
@@ -15,11 +15,12 @@ public class LoginServiceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
     private LoginService sut;
 
     @Before
     public void setUp() throws Exception {
-        sut = new LoginService();
+        sut = new LoginServiceImpl();
     }
 
     @Test

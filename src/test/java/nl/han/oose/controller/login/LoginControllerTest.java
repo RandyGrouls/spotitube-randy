@@ -1,8 +1,8 @@
-package nl.han.oose.Controller.Login;
+package nl.han.oose.controller.login;
 
 import nl.han.oose.Account;
-import nl.han.oose.Service.Login.LoginService;
 import nl.han.oose.UserToken;
+import nl.han.oose.service.login.LoginService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.naming.AuthenticationException;
 import javax.security.auth.login.LoginException;
 import javax.ws.rs.core.Response;
 
@@ -36,9 +37,10 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void testStatusUnauthorizedOnUnsuccessfulLogin() throws LoginException {
+    public void testStatusUnauthorizedOnUnsuccessfulLogin() throws AuthenticationException, LoginException {
         Account account = new Account("", "");
-        Response loginResponse = new LoginController().login(account);
+        Mockito.when(loginService.checkLogin(Mockito.any())).thenThrow(new LoginException("Usertoken not correct"));
+        Response loginResponse = sut.login(account);
 
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), loginResponse.getStatus());
     }

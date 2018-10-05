@@ -1,8 +1,9 @@
-package nl.han.oose.Controller.Login;
+package nl.han.oose.controller.login;
 
 import nl.han.oose.Account;
-import nl.han.oose.Service.Login.LoginService;
+import nl.han.oose.service.login.LoginService;
 
+import javax.inject.Inject;
 import javax.security.auth.login.LoginException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -13,7 +14,9 @@ import javax.ws.rs.core.Response;
 
 @Path("/login")
 public class LoginController {
-    private LoginService loginService = new LoginService();
+
+    @Inject
+    private LoginService loginService;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

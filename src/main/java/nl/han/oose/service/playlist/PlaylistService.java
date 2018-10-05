@@ -1,4 +1,4 @@
-package nl.han.oose.Service.Playlist;
+package nl.han.oose.service.playlist;
 
 import nl.han.oose.Playlist;
 import nl.han.oose.Playlists;
@@ -17,7 +17,7 @@ public class PlaylistService {
             playlists.setLength(1234);
             return playlists;
         } else {
-            throw new AuthenticationException("Usertoken not correct");
+            throw new AuthenticationException("Usertoken incorrect");
         }
     }
 }

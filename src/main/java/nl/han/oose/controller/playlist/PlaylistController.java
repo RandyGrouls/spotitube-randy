@@ -1,6 +1,6 @@
-package nl.han.oose.Controller.Playlist;
+package nl.han.oose.controller.playlist;
 
-import nl.han.oose.Service.Playlist.PlaylistService;
+import nl.han.oose.service.playlist.PlaylistService;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.*;
