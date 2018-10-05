@@ -22,4 +22,16 @@ public class PlaylistController {
         }
     }
 
+    @Path("/{id}/tracks")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getContentOfPlaylist(@QueryParam("token") String userToken, @PathParam("id") int playlistId) {
+        try {
+            return Response.status(Response.Status.OK).entity(playlistService.getContentOfPlaylist(userToken, playlistId)).build();
+        } catch (AuthenticationException e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+
 }
