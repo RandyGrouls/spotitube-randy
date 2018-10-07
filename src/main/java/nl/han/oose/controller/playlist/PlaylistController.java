@@ -2,6 +2,7 @@ package nl.han.oose.controller.playlist;
 
 import nl.han.oose.service.playlist.PlaylistService;
 
+import javax.inject.Inject;
 import javax.naming.AuthenticationException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -9,7 +10,9 @@ import javax.ws.rs.core.Response;
 
 @Path("/playlists")
 public class PlaylistController {
-    private PlaylistService playlistService = new PlaylistService();
+
+    @Inject
+    private PlaylistService playlistService;
 
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
