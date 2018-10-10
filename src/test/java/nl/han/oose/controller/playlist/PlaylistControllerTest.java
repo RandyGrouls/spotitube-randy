@@ -1,9 +1,9 @@
 package nl.han.oose.controller.playlist;
 
-import nl.han.oose.Playlist;
-import nl.han.oose.Playlists;
-import nl.han.oose.Track;
-import nl.han.oose.Tracklist;
+import nl.han.oose.entity.playlist.Playlist;
+import nl.han.oose.entity.playlist.Playlists;
+import nl.han.oose.entity.track.Track;
+import nl.han.oose.entity.track.Tracklist;
 import nl.han.oose.service.playlist.PlaylistService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

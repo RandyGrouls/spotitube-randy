@@ -1,7 +1,7 @@
 package nl.han.oose.service.playlist;
 
-import nl.han.oose.Playlists;
-import nl.han.oose.Tracklist;
+import nl.han.oose.entity.playlist.Playlists;
+import nl.han.oose.entity.track.Tracklist;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

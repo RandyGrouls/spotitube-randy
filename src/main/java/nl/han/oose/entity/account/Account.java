@@ -1,4 +1,4 @@
-package nl.han.oose;
+package nl.han.oose.entity.account;
 
 public class Account {
     private String user;

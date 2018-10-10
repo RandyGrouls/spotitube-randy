@@ -1,6 +1,6 @@
 package nl.han.oose.controller.login;
 
-import nl.han.oose.Account;
+import nl.han.oose.entity.account.Account;
 import nl.han.oose.service.login.LoginService;
 
 import javax.inject.Inject;

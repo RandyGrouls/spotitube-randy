@@ -37,4 +37,16 @@ public class PlaylistController {
         }
     }
 
+    @Path("/{id}")
+    @DELETE
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deletePlaylist(@QueryParam("token") String userToken, @PathParam("id") int playlistId) {
+        try {
+            return Response.status(Response.Status.OK).entity(playlistService.deletePlaylist(userToken, playlistId)).build();
+        } catch (AuthenticationException e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+
 }

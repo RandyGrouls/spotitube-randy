@@ -1,4 +1,4 @@
-package nl.han.oose;
+package nl.han.oose.controller;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
