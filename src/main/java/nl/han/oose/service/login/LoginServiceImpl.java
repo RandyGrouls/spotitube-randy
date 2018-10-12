@@ -2,7 +2,8 @@ package nl.han.oose.service.login;
 
 
 import nl.han.oose.entity.account.Account;
-import nl.han.oose.persistence.AccountDAO;
+import nl.han.oose.persistence.account.AccountDAO;
+import nl.han.oose.persistence.token.TokenDAO;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -14,10 +15,14 @@ public class LoginServiceImpl implements LoginService {
     @Inject
     private AccountDAO accountDAO;
 
+    @Inject
+    private TokenDAO tokenDAO;
+
     @Override
     public UserToken checkLogin(Account account) throws LoginException {
-        if ("randy".equals(account.getUser()) && "password".equals(account.getPassword())) {
-            return new UserToken("1234-1234-1234", "Randy Grouls");
+        Account userAccount = accountDAO.getAccount(account.getUser());
+        if (userAccount != null && account.getPassword().equals(userAccount.getPassword())) {
+            return tokenDAO.createNewTokenForUser(userAccount.getUser(), userAccount.getFullname());
         } else {
             throw new LoginException("Credentials incorrect");
         }

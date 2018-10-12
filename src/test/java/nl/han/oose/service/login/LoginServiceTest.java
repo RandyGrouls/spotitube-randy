@@ -24,7 +24,7 @@ public class LoginServiceTest {
 
     @Test
     public void testThatUserTokenIsReturnedIfCredentialsAreCorrect() throws LoginException {
-        Account user = new Account("randy", "password");
+        Account user = new Account("randy", "password", "Randy Grouls");
         UserToken userToken = sut.checkLogin(user);
 
         assertEquals("1234-1234-1234", userToken.getToken());
@@ -35,7 +35,7 @@ public class LoginServiceTest {
     public void testThaExceptionIsReturnedIfCredentialsAreIncorrect() throws LoginException {
         thrown.expect(LoginException.class);
         thrown.expectMessage("Credentials incorrect");
-        Account user = new Account("randy", "wrongpassword");
+        Account user = new Account("randy", "wrongpassword", "Randy Grouls");
         sut.checkLogin(user);
     }
 }

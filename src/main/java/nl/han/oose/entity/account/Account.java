@@ -3,13 +3,15 @@ package nl.han.oose.entity.account;
 public class Account {
     private String user;
     private String password;
+    private String fullname;
 
     public Account() {
     }
 
-    public Account(String user, String password) {
+    public Account(String user, String password, String fullname) {
         this.user = user;
         this.password = password;
+        this.fullname = fullname;
     }
 
     public String getUser() {
@@ -28,5 +30,11 @@ public class Account {
         this.password = password;
     }
 
+    public String getFullname() {
+        return fullname;
+    }
 
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
 }
