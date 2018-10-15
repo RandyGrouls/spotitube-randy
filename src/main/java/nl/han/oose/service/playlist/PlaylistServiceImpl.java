@@ -32,12 +32,13 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public Tracklist getContentOfPlaylist(String userToken, int playlistId) throws AuthenticationException {
-//        if ("0f604c6b-581d-4d86-9bc2-7aa58b8a3c9b".equals(userToken)) {
-//        } else {
-//            throw new AuthenticationException("Usertoken incorrect");
-//        }
-        return null;
+    public Tracklist getContentOfPlaylist(String token, int playlistId) throws AuthenticationException {
+        UserToken userToken = tokenDAO.getUsertoken(token);
+        if (tokenDAO.isTokenValid(userToken)) {
+            return playlistDAO.getContentOfPlaylist(playlistId);
+        } else {
+            throw new AuthenticationException("Usertoken incorrect");
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class TokenDAO {
@@ -45,20 +46,19 @@ public class TokenDAO {
         try (
                 Connection connection = connectionFactory.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                        "SELECT * FROM token WHERE token = ?");
+                        "SELECT * FROM token WHERE token = ? AND account_user = ?");
         ) {
             preparedStatement.setString(1, userToken.getToken());
+            preparedStatement.setString(2, userToken.getUser());
             ResultSet resultSet = preparedStatement.executeQuery();
             LocalDateTime currentDateTime = LocalDateTime.now();
             while (resultSet.next()) {
-//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//                LocalDateTime expiryDate = LocalDateTime.parse(resultSet.getString("expiry_date"), formatter);
-//                String user = resultSet.getString("account_user");
-//                System.out.println(currentDateTime);
-//                System.out.println(expiryDate);
-//                if(expiryDate.isAfter(currentDateTime) && user.equals(userToken.getUser())) {
-                isValid = true;
-//                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime expiryDate = LocalDateTime.parse(resultSet.getString("expiry_date"), formatter);
+                String user = resultSet.getString("account_user");
+                if (expiryDate.isAfter(currentDateTime)) {
+                    isValid = true;
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

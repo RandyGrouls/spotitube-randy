@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Tracklist {
 
-    private ArrayList<Track> tracks;
+    private ArrayList<Track> tracks = new ArrayList<>();
 
     public Tracklist() {
     }

@@ -15,7 +15,6 @@ public class PlaylistController {
     private PlaylistService playlistService;
 
     @GET
-    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPlaylists(@QueryParam("token") String userToken) {
         try {
@@ -27,7 +26,6 @@ public class PlaylistController {
 
     @Path("/{id}/tracks")
     @GET
-    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getContentOfPlaylist(@QueryParam("token") String userToken, @PathParam("id") int playlistId) {
         try {
@@ -39,7 +37,6 @@ public class PlaylistController {
 
     @Path("/{id}")
     @DELETE
-    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deletePlaylist(@QueryParam("token") String userToken, @PathParam("id") int playlistId) {
         try {
