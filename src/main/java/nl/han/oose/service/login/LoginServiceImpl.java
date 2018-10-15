@@ -2,6 +2,7 @@ package nl.han.oose.service.login;
 
 
 import nl.han.oose.entity.account.Account;
+import nl.han.oose.entity.token.UserToken;
 import nl.han.oose.persistence.account.AccountDAO;
 import nl.han.oose.persistence.token.TokenDAO;
 

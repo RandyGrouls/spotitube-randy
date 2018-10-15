@@ -1,31 +1,31 @@
 package nl.han.oose.service.playlist;
 
-import nl.han.oose.entity.playlist.Playlist;
 import nl.han.oose.entity.playlist.Playlists;
-import nl.han.oose.entity.track.Track;
+import nl.han.oose.entity.token.UserToken;
 import nl.han.oose.entity.track.Tracklist;
+import nl.han.oose.persistence.playlist.PlaylistDAO;
+import nl.han.oose.persistence.token.TokenDAO;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.naming.AuthenticationException;
-import java.util.ArrayList;
 
 @Default
 public class PlaylistServiceImpl implements PlaylistService {
 
     private static Playlists playlists;
 
-    @Override
-    public Playlists getAllPlaylists(String userToken) throws AuthenticationException {
-        if ("1234-1234-1234".equals(userToken)) {
-            playlists = new Playlists();
-            ArrayList<Track> tracks = new ArrayList<>();
-            tracks.add(new Track(1, "Song for someone", "The Frames", 350, "The Cost", 50, "01-05-2007", "Title song from the Album The Cost", false));
-            tracks.add(new Track(2, "The cost", "The Frames", 423, "The Cost", 50, "10-01-2005", "Title song from the Album The Cost", true));
+    @Inject
+    private PlaylistDAO playlistDAO;
 
-            playlists.getPlaylists().add(new Playlist(1, "Death metal", true, tracks));
-            playlists.getPlaylists().add(new Playlist(2, "Pop", false, tracks));
-            playlists.setLength(1234);
-            return playlists;
+    @Inject
+    private TokenDAO tokenDAO;
+
+    @Override
+    public Playlists getAllPlaylists(String token) throws AuthenticationException {
+        UserToken userToken = tokenDAO.getUsertoken(token);
+        if (tokenDAO.isTokenValid(userToken)) {
+            return playlistDAO.getAllPlaylistsForUser(userToken);
         } else {
             throw new AuthenticationException("Usertoken incorrect");
         }
@@ -33,15 +33,10 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public Tracklist getContentOfPlaylist(String userToken, int playlistId) throws AuthenticationException {
-        if ("1234-1234-1234".equals(userToken)) {
-            for (Playlist playlist : playlists.getPlaylists()) {
-                if (playlistId == playlist.getId()) {
-                    return new Tracklist(playlist.getTracks());
-                }
-            }
-        } else {
-            throw new AuthenticationException("Usertoken incorrect");
-        }
+//        if ("0f604c6b-581d-4d86-9bc2-7aa58b8a3c9b".equals(userToken)) {
+//        } else {
+//            throw new AuthenticationException("Usertoken incorrect");
+//        }
         return null;
     }
 

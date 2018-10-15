@@ -1,8 +1,8 @@
 package nl.han.oose.controller.login;
 
 import nl.han.oose.entity.account.Account;
+import nl.han.oose.entity.token.UserToken;
 import nl.han.oose.service.login.LoginService;
-import nl.han.oose.service.login.UserToken;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -2,7 +2,7 @@ USE spotitube;
 
 /*inserts into account table*/
 INSERT INTO account (user, password , full_name)
-VALUES ('Randy', 'randypassword', 'Randy Grouls');
+VALUES ('randy', 'randypassword', 'Randy Grouls');
 
 /*inserts into playlist table*/
 INSERT INTO playlist (account_user, name, owner)

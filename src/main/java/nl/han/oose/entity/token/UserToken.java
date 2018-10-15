@@ -1,4 +1,4 @@
-package nl.han.oose.service.login;
+package nl.han.oose.entity.token;
 
 public class UserToken {
     private String token;
