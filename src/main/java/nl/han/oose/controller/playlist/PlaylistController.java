@@ -1,5 +1,6 @@
 package nl.han.oose.controller.playlist;
 
+import nl.han.oose.entity.playlist.Playlist;
 import nl.han.oose.service.playlist.PlaylistService;
 
 import javax.inject.Inject;
@@ -27,9 +28,9 @@ public class PlaylistController {
     @Path("/{id}/tracks")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getContentOfPlaylist(@QueryParam("token") String userToken, @PathParam("id") int playlistId) {
+    public Response getContentOfPlaylist(@QueryParam("token") String token, @PathParam("id") int playlistId) {
         try {
-            return Response.status(Response.Status.OK).entity(playlistService.getContentOfPlaylist(userToken, playlistId)).build();
+            return Response.status(Response.Status.OK).entity(playlistService.getContentOfPlaylist(token, playlistId)).build();
         } catch (AuthenticationException e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -38,12 +39,23 @@ public class PlaylistController {
     @Path("/{id}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePlaylist(@QueryParam("token") String userToken, @PathParam("id") int playlistId) {
+    public Response deletePlaylist(@QueryParam("token") String token, @PathParam("id") int playlistId) {
         try {
-            return Response.status(Response.Status.OK).entity(playlistService.deletePlaylist(userToken, playlistId)).build();
+            return Response.status(Response.Status.OK).entity(playlistService.deletePlaylist(token, playlistId)).build();
         } catch (AuthenticationException e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
 
+    @Path("/{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response renamePlaylist(@QueryParam("token") String token, Playlist playlist) {
+        try {
+            return Response.status(Response.Status.OK).entity(playlistService.renamePlaylist(token, playlist)).build();
+        } catch (AuthenticationException e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
 }

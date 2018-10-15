@@ -55,7 +55,6 @@ public class TokenDAO {
             while (resultSet.next()) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 LocalDateTime expiryDate = LocalDateTime.parse(resultSet.getString("expiry_date"), formatter);
-                String user = resultSet.getString("account_user");
                 if (expiryDate.isAfter(currentDateTime)) {
                     isValid = true;
                 }

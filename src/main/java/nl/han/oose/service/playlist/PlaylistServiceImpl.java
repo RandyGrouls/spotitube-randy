@@ -1,5 +1,6 @@
 package nl.han.oose.service.playlist;
 
+import nl.han.oose.entity.playlist.Playlist;
 import nl.han.oose.entity.playlist.Playlists;
 import nl.han.oose.entity.token.UserToken;
 import nl.han.oose.entity.track.Tracklist;
@@ -42,10 +43,20 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public Playlists deletePlaylist(String userToken, int playlistId) throws AuthenticationException {
-        if ("1234-1234-1234".equals(userToken)) {
+    public Playlists deletePlaylist(String token, int playlistId) throws AuthenticationException {
+        if ("1234-1234-1234".equals(token)) {
             playlists.getPlaylists().removeIf(playlist -> playlist.getId() == playlistId);
             return playlists;
+        } else {
+            throw new AuthenticationException("Usertoken incorrect");
+        }
+    }
+
+    @Override
+    public Playlists renamePlaylist(String token, Playlist playlist) throws AuthenticationException {
+        UserToken userToken = tokenDAO.getUsertoken(token);
+        if (tokenDAO.isTokenValid(userToken)) {
+            return playlistDAO.renamePlaylist(userToken, playlist);
         } else {
             throw new AuthenticationException("Usertoken incorrect");
         }

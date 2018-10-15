@@ -1,5 +1,6 @@
 package nl.han.oose.service.playlist;
 
+import nl.han.oose.entity.playlist.Playlist;
 import nl.han.oose.entity.playlist.Playlists;
 import nl.han.oose.entity.track.Tracklist;
 
@@ -11,4 +12,6 @@ public interface PlaylistService {
     Tracklist getContentOfPlaylist(String userToken, int playlistId) throws AuthenticationException;
 
     Playlists deletePlaylist(String userToken, int playlistId) throws AuthenticationException;
+
+    Playlists renamePlaylist(String token, Playlist playlist) throws AuthenticationException;
 }
