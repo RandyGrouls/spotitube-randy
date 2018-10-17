@@ -22,22 +22,24 @@ public class PlaylistDAO {
     @Inject
     private ConnectionFactory connectionFactory;
 
-    public Playlists getAllPlaylistsForUser(UserToken userToken) {
+    public Playlists getAllPlaylists(UserToken userToken) {
         Playlists playlists = new Playlists();
         int playlistLength = 0;
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM playlist WHERE account_user = ?");
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM playlist");
         ) {
-            preparedStatement.setString(1, userToken.getUser());
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
-                Boolean owner = resultSet.getBoolean("owner");
-
+                String accountUser = resultSet.getString("account_user");
+                Boolean owner = true;
+                if (!accountUser.equals(userToken.getUser())) {
+                    owner = false;
+                }
 
                 playlists.getPlaylists().add(new Playlist(id, name, owner, new ArrayList<>()));
                 playlistLength += getLengthOfPlaylist(id);
@@ -55,9 +57,8 @@ public class PlaylistDAO {
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(duration) AS playlist_length FROM track WHERE playlist_id = ?")
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(duration) AS playlist_length FROM track WHERE id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
         ) {
-
             preparedStatement.setInt(1, playlistId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -75,9 +76,14 @@ public class PlaylistDAO {
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM track WHERE playlist_id = ?");
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM tracks_view tv\n" +
+                        "        LEFT JOIN tracksInPlaylist\n" +
+                        "           ON tracksInPlaylist.track_id = tv.id\n" +
+                        "           AND tracksInPlaylist.playlist_id = ?\n" +
+                        "WHERE tv.id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
         ) {
             preparedStatement.setInt(1, playlistId);
+            preparedStatement.setInt(2, playlistId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -85,18 +91,24 @@ public class PlaylistDAO {
                 String title = resultSet.getString("title");
                 String performer = resultSet.getString("performer");
                 int duration = resultSet.getInt("duration");
-                String album = resultSet.getString("album");
+                String url = resultSet.getString("url");
                 int playcount = resultSet.getInt("playcount");
+                String album = resultSet.getString("album");
 
-                SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = oldFormat.parse(resultSet.getString("publication_date"));
-                SimpleDateFormat newFormat = new SimpleDateFormat("dd-MM-yyyy");
+                String publicationDate = null;
 
-                String publicationDate = newFormat.format(date);
+                if (!(null == (resultSet.getString("publication_date")))) {
+                    SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = oldFormat.parse(resultSet.getString("publication_date"));
+                    SimpleDateFormat newFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+                    publicationDate = newFormat.format(date);
+                }
+
                 String description = resultSet.getString("description");
                 boolean offlineAvailable = resultSet.getBoolean("offline_available");
 
-                tracklist.getTracks().add(new Track(id, title, performer, duration, album, playcount, publicationDate, description, offlineAvailable));
+                tracklist.getTracks().add(new Track(id, title, performer, duration, url, album, playcount, publicationDate, description, offlineAvailable));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -106,8 +118,7 @@ public class PlaylistDAO {
         return tracklist;
     }
 
-    public Playlists renamePlaylist(UserToken userToken, Playlist playlist) {
-        Playlists playlists = null;
+    public void renamePlaylist(Playlist playlist) {
         try (
                 Connection connection = connectionFactory.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE playlist SET name = ? WHERE id = ?");
@@ -116,14 +127,66 @@ public class PlaylistDAO {
             preparedStatement.setInt(2, playlist.getId());
 
             preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-            System.out.println(preparedStatement);
+    public void deletePlaylist(int playlistId) {
+        try (
+                Connection connection = connectionFactory.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM playlist WHERE id = ?");
+        ) {
+            preparedStatement.setInt(1, playlistId);
 
-            playlists = getAllPlaylistsForUser(userToken);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeTrackFromPlaylist(int playlistId, int trackId) {
+        try (
+                Connection connection = connectionFactory.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM tracksInPlaylist WHERE playlist_id = ? AND track_id = ?");
+        ) {
+            preparedStatement.setInt(1, playlistId);
+            preparedStatement.setInt(2, trackId);
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void addPlaylist(UserToken userToken, Playlist playlist) {
+        try (
+                Connection connection = connectionFactory.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO playlist (account_user, name) VALUES(?,?)");
+        ) {
+            preparedStatement.setString(1, userToken.getUser());
+            preparedStatement.setString(2, playlist.getName());
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addTrackToPlaylist(int playlistId, Track track) {
+        try (
+                Connection connection = connectionFactory.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tracksInPlaylist (playlist_id, track_id, offline_available) VALUES(?,?,?)");
+        ) {
+            preparedStatement.setInt(1, playlistId);
+            preparedStatement.setInt(2, track.getId());
+            preparedStatement.setBoolean(3, track.isOfflineAvailable());
+
+            preparedStatement.execute();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return playlists;
     }
-
 }
