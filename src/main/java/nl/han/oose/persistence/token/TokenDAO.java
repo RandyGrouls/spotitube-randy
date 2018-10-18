@@ -85,4 +85,16 @@ public class TokenDAO {
         return userToken;
     }
 
+    public void deleteAllExpiredTokens() {
+        try (
+                Connection connection = connectionFactory.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM token WHERE expiry_date < NOW()")
+        ) {
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

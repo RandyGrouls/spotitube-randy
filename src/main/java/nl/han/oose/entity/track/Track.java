@@ -11,6 +11,7 @@ public class Track {
     private int playcount;
     private String publicationDate;
     private String description;
+
     private boolean offlineAvailable;
 
     public Track() {
@@ -60,6 +61,14 @@ public class Track {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getAlbum() {

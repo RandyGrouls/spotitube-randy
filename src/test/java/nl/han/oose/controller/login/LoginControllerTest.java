@@ -32,14 +32,14 @@ public class LoginControllerTest {
         Account account = new Account("", "", "");
         Response loginResponse = sut.login(account);
 
-        assertEquals(Response.Status.OK.getStatusCode(), loginResponse.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), loginResponse.getStatus());
         assertEquals(userToken, loginResponse.getEntity());
     }
 
     @Test
     public void testStatusUnauthorizedOnUnsuccessfulLogin() throws AuthenticationException, LoginException {
         Account account = new Account("", "", "");
-        Mockito.when(loginService.checkLogin(Mockito.any())).thenThrow(new LoginException("Usertoken not correct"));
+        Mockito.when(loginService.checkLogin(Mockito.any())).thenThrow(new LoginException("Credentials incorrect"));
         Response loginResponse = sut.login(account);
 
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), loginResponse.getStatus());

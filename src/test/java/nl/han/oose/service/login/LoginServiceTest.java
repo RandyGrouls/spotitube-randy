@@ -2,41 +2,56 @@ package nl.han.oose.service.login;
 
 import nl.han.oose.entity.account.Account;
 import nl.han.oose.entity.token.UserToken;
-import org.junit.Before;
+import nl.han.oose.persistence.account.AccountDAO;
+import nl.han.oose.persistence.token.TokenDAO;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.security.auth.login.LoginException;
 
 import static junit.framework.TestCase.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class LoginServiceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private LoginService sut;
+    @Mock
+    private AccountDAO accountDAO;
 
-    @Before
-    public void setUp() throws Exception {
-        sut = new LoginServiceImpl();
-    }
+    @Mock
+    private TokenDAO tokenDAO;
+
+    @InjectMocks
+    private LoginServiceImpl sut;
 
     @Test
     public void testThatUserTokenIsReturnedIfCredentialsAreCorrect() throws LoginException {
-        Account user = new Account("randy", "password", "Randy Grouls");
-        UserToken userToken = sut.checkLogin(user);
+        Account account = new Account("randy", "randypassword", "Randy Grouls");
+        UserToken userToken = new UserToken("123123", "randy");
+        Mockito.when(accountDAO.getAccount(Mockito.any())).thenReturn(account);
+        Mockito.when(tokenDAO.createNewTokenForUser(Mockito.any(), Mockito.any())).thenReturn(userToken);
+        sut.checkLogin(account);
 
-        assertEquals("1234-1234-1234", userToken.getToken());
-        assertEquals("Randy Grouls", userToken.getUser());
+        assertEquals("123123", userToken.getToken());
+        assertEquals("randy", userToken.getUser());
     }
 
     @Test
     public void testThaExceptionIsReturnedIfCredentialsAreIncorrect() throws LoginException {
         thrown.expect(LoginException.class);
         thrown.expectMessage("Credentials incorrect");
-        Account user = new Account("randy", "wrongpassword", "Randy Grouls");
-        sut.checkLogin(user);
+
+        Account account = new Account("randy", "randypassword", "Randy Grouls");
+        Account account1 = new Account("randy", "randywrongpassword", "Randy Grouls");
+        Mockito.when(accountDAO.getAccount(Mockito.any())).thenReturn(account);
+        sut.checkLogin(account1);
     }
 }

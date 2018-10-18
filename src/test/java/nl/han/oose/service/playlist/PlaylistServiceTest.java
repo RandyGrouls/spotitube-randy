@@ -1,59 +1,221 @@
 package nl.han.oose.service.playlist;
 
+import nl.han.oose.entity.playlist.Playlist;
 import nl.han.oose.entity.playlist.Playlists;
+import nl.han.oose.entity.token.UserToken;
+import nl.han.oose.entity.track.Track;
 import nl.han.oose.entity.track.Tracklist;
-import org.junit.Before;
+import nl.han.oose.persistence.playlist.PlaylistDAO;
+import nl.han.oose.persistence.token.TokenDAO;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.naming.AuthenticationException;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PlaylistServiceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private PlaylistService sut;
+    @Mock
+    private PlaylistDAO playlistDAO;
 
-    @Before
-    public void setUp() throws Exception {
-        sut = new PlaylistServiceImpl();
+    @Mock
+    private TokenDAO tokenDAO;
+
+    @InjectMocks
+    private PlaylistServiceImpl sut;
+
+    //Tests for getAllPlaylists
+    @Test
+    public void testThatPlaylistsAreReturnedIfUsertokenIsValidGetAllPlaylists() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Playlists playlists = new Playlists();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getAllPlaylists(Mockito.any())).thenReturn(playlists);
+
+        assertEquals(playlists, sut.getAllPlaylists("123"));
     }
 
     @Test
-    public void testThatPlaylistsAreReturnedIfUsertokenIsCorrect() throws AuthenticationException {
-        Playlists playlists = sut.getAllPlaylists("1234-1234-1234");
-
-        assertEquals(2, playlists.getPlaylists().size());
-        assertEquals("Death metal", playlists.getPlaylists().get(0).getName());
-        assertEquals("Pop", playlists.getPlaylists().get(1).getName());
-        assertEquals(1234, playlists.getLength());
-    }
-
-    @Test
-    public void testThatExceptionIsReturnedOnGetAllPlaylistsIfUsertokenIsIncorrect() throws AuthenticationException {
+    public void testThatExceptionIsReturnedIfTokenIsInvalidGetAllPlaylists() throws AuthenticationException {
         thrown.expect(AuthenticationException.class);
         thrown.expectMessage("Usertoken incorrect");
-        sut.getAllPlaylists("1234");
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.getAllPlaylists("123");
+
+    }
+
+    //Tests for getContentOfPlaylist
+    @Test
+    public void testThatTracklistIsReturnedIfUsertokenIsValidGetContentOfPlaylist() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Tracklist tracklist = new Tracklist();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+
+        assertEquals(tracklist, sut.getContentOfPlaylist("123", 1));
     }
 
     @Test
-    public void testThatTracksAreReturnedIfUsertokenIsCorrect() throws AuthenticationException {
-        Tracklist tracklist = sut.getContentOfPlaylist("1234-1234-1234", 1);
-
-        assertEquals(1, tracklist.getTracks().get(0).getId());
-        assertEquals("Song for someone", tracklist.getTracks().get(0).getTitle());
-        assertEquals(2, tracklist.getTracks().get(1).getId());
-        assertEquals("The cost", tracklist.getTracks().get(1).getTitle());
-    }
-
-    @Test
-    public void testThatExceptionIsReturnedOnGetContentOfPlaylistIfUsertokenIsIncorrect() throws AuthenticationException {
+    public void testThatExceptionIsReturnedIfTokenIsInvalidGetContentOfPlaylist() throws AuthenticationException {
         thrown.expect(AuthenticationException.class);
         thrown.expectMessage("Usertoken incorrect");
-        sut.getContentOfPlaylist("1234", 1);
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.getContentOfPlaylist("123", 1);
+    }
+
+    //Tests for deletePlaylist
+    @Test
+    public void testThatPlaylistsAreReturnedIfUsertokenIsValidDeletePlaylist() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Playlists playlists = new Playlists();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getAllPlaylists(Mockito.any())).thenReturn(playlists);
+
+        assertEquals(playlists, sut.deletePlaylist("123", 1));
+    }
+
+    @Test
+    public void testThatExceptionIsReturnedIfTokenIsInvalidDeletePlaylist() throws AuthenticationException {
+        thrown.expect(AuthenticationException.class);
+        thrown.expectMessage("Usertoken incorrect");
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.deletePlaylist("123", 1);
+    }
+
+
+    //Tests for renamePlaylist
+    @Test
+    public void testThatPlaylistsAreReturnedIfUsertokenIsValidRenamePlaylist() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Playlists playlists = new Playlists();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getAllPlaylists(Mockito.any())).thenReturn(playlists);
+
+        assertEquals(playlists, sut.renamePlaylist("123", new Playlist()));
+    }
+
+    @Test
+    public void testThatExceptionIsReturnedIfTokenIsInvalidDRenamePlaylist() throws AuthenticationException {
+        thrown.expect(AuthenticationException.class);
+        thrown.expectMessage("Usertoken incorrect");
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.renamePlaylist("123", new Playlist());
+    }
+
+    //Tests for removeTrackFromPlaylist
+    @Test
+    public void testThatTracklistIsReturnedIfUsertokenIsValidRemoveTrackFromPlaylist() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Tracklist tracklist = new Tracklist();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+
+        assertEquals(tracklist, sut.removeTrackFromPlaylist("123", 1, 1));
+    }
+
+    @Test
+    public void testThatExceptionIsReturnedIfTokenIsInvalidDRemoveTrackFromPlaylist() throws AuthenticationException {
+        thrown.expect(AuthenticationException.class);
+        thrown.expectMessage("Usertoken incorrect");
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.removeTrackFromPlaylist("123", 1, 1);
+    }
+
+    //Tests for addPlaylist
+    @Test
+    public void testThatPlaylistsAreReturnedIfUsertokenIsValidAddPlaylist() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Playlists playlists = new Playlists();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getAllPlaylists(Mockito.any())).thenReturn(playlists);
+
+        assertEquals(playlists, sut.addPlaylist("123", new Playlist()));
+    }
+
+    @Test
+    public void testThatExceptionIsReturnedIfTokenIsInvalidAddPlaylist() throws AuthenticationException {
+        thrown.expect(AuthenticationException.class);
+        thrown.expectMessage("Usertoken incorrect");
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.addPlaylist("123", new Playlist());
+    }
+
+    //Tests for addTrackToPlaylist
+    @Test
+    public void testThatTracklistIsReturnedIfUsertokenIsValidAddTrackToPlaylist() throws AuthenticationException {
+        UserToken userToken = new UserToken("123123", "randy");
+        Tracklist tracklist = new Tracklist();
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
+        Mockito.when(playlistDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+
+        assertEquals(tracklist, sut.addTrackToPlaylist("123", 1, new Track()));
+    }
+
+    @Test
+    public void testThatExceptionIsReturnedIfTokenIsInvalidAddTrackToPlaylist() throws AuthenticationException {
+        thrown.expect(AuthenticationException.class);
+        thrown.expectMessage("Usertoken incorrect");
+
+        UserToken userToken = new UserToken("123123", "randy");
+
+        Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
+        Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(false);
+
+        sut.addTrackToPlaylist("123", 1, new Track());
     }
 }

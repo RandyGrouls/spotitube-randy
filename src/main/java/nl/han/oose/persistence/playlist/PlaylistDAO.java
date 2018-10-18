@@ -108,6 +108,7 @@ public class PlaylistDAO {
                 String description = resultSet.getString("description");
                 boolean offlineAvailable = resultSet.getBoolean("offline_available");
 
+
                 tracklist.getTracks().add(new Track(id, title, performer, duration, url, album, playcount, publicationDate, description, offlineAvailable));
             }
         } catch (SQLException e) {

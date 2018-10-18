@@ -23,6 +23,7 @@ public class LoginServiceImpl implements LoginService {
     public UserToken checkLogin(Account account) throws LoginException {
         Account userAccount = accountDAO.getAccount(account.getUser());
         if (userAccount != null && account.getPassword().equals(userAccount.getPassword())) {
+            tokenDAO.deleteAllExpiredTokens();
             return tokenDAO.createNewTokenForUser(userAccount.getUser(), userAccount.getFullname());
         } else {
             throw new LoginException("Credentials incorrect");
