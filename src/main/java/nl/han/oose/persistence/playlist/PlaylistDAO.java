@@ -3,8 +3,10 @@ package nl.han.oose.persistence.playlist;
 import nl.han.oose.entity.playlist.Playlist;
 import nl.han.oose.entity.playlist.Playlists;
 import nl.han.oose.entity.token.UserToken;
+import nl.han.oose.entity.track.Song;
 import nl.han.oose.entity.track.Track;
 import nl.han.oose.entity.track.Tracklist;
+import nl.han.oose.entity.track.Video;
 import nl.han.oose.persistence.ConnectionFactory;
 
 import javax.inject.Inject;
@@ -73,14 +75,25 @@ public class PlaylistDAO {
 
     public Tracklist getContentOfPlaylist(int playlistId) {
         Tracklist tracklist = new Tracklist();
+        Tracklist songs = getSongsInPlaylist(playlistId);
+        Tracklist videos = getVideosInPlaylist(playlistId);
+
+        tracklist.getTracks().addAll(songs.getTracks());
+        tracklist.getTracks().addAll(videos.getTracks());
+
+        return tracklist;
+    }
+
+    public Tracklist getSongsInPlaylist(int playlistId) {
+        Tracklist tracklist = new Tracklist();
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM tracks_view tv\n" +
-                        "        LEFT JOIN tracksInPlaylist\n" +
-                        "           ON tracksInPlaylist.track_id = tv.id\n" +
-                        "           AND tracksInPlaylist.playlist_id = ?\n" +
-                        "WHERE tv.id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT sv.*, tip.offline_available FROM songs_view sv\n" +
+                        "        LEFT JOIN tracksInPlaylist tip\n" +
+                        "           ON tip.track_id = sv.id\n" +
+                        "           AND tip.playlist_id = ?\n" +
+                        "WHERE sv.id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
         ) {
             preparedStatement.setInt(1, playlistId);
             preparedStatement.setInt(2, playlistId);
@@ -94,6 +107,39 @@ public class PlaylistDAO {
                 String url = resultSet.getString("url");
                 int playcount = resultSet.getInt("playcount");
                 String album = resultSet.getString("album");
+                boolean offlineAvailable = resultSet.getBoolean("offline_available");
+
+
+                tracklist.getTracks().add(new Song(id, title, performer, duration, url, playcount, offlineAvailable, album));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return tracklist;
+    }
+
+    public Tracklist getVideosInPlaylist(int playlistId) {
+        Tracklist tracklist = new Tracklist();
+
+        try (
+                Connection connection = connectionFactory.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT vv.*, tip.offline_available FROM videos_view vv\n" +
+                        "        LEFT JOIN tracksInPlaylist tip\n" +
+                        "           ON tip.track_id = vv.id\n" +
+                        "           AND tip.playlist_id = ?\n" +
+                        "WHERE vv.id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
+        ) {
+            preparedStatement.setInt(1, playlistId);
+            preparedStatement.setInt(2, playlistId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String title = resultSet.getString("title");
+                String performer = resultSet.getString("performer");
+                int duration = resultSet.getInt("duration");
+                String url = resultSet.getString("url");
+                int playcount = resultSet.getInt("playcount");
 
                 String publicationDate = null;
 
@@ -109,7 +155,7 @@ public class PlaylistDAO {
                 boolean offlineAvailable = resultSet.getBoolean("offline_available");
 
 
-                tracklist.getTracks().add(new Track(id, title, performer, duration, url, album, playcount, publicationDate, description, offlineAvailable));
+                tracklist.getTracks().add(new Video(id, title, performer, duration, url, playcount, offlineAvailable, publicationDate, description));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

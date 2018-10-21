@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.naming.AuthenticationException;
 import javax.security.auth.login.LoginException;
 import javax.ws.rs.core.Response;
 
@@ -37,7 +36,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void testStatusUnauthorizedOnUnsuccessfulLogin() throws AuthenticationException, LoginException {
+    public void testStatusUnauthorizedOnUnsuccessfulLogin() throws LoginException {
         Account account = new Account("", "", "");
         Mockito.when(loginService.checkLogin(Mockito.any())).thenThrow(new LoginException("Credentials incorrect"));
         Response loginResponse = sut.login(account);

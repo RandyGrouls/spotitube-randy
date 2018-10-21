@@ -182,7 +182,7 @@ public class PlaylistControllerTest {
 
     //Tests for addTrackToPlaylist
     @Test
-    public void testStatusBadRequestOnEmptyUsertokenAddTrackToPlaylist() throws AuthenticationException {
+    public void testStatusBadRequestOnEmptyUsertokenAddTrackToPlaylist() {
         Response response = sut.addTrackToPlaylist("", 1, new Track());
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
