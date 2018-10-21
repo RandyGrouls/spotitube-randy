@@ -19,7 +19,7 @@ public class TrackServiceImpl implements TrackService {
     @Override
     public Tracklist getAllAvailableTracksForPlaylist(String token, int playlistId) throws AuthenticationException {
         UserToken userToken = tokenDAO.getUsertoken(token);
-        if (tokenDAO.isTokenValid(userToken)) {
+        if (userToken != null && tokenDAO.isTokenValid(userToken)) {
             return trackDAO.getAllAvailableTracksForPlaylist(playlistId);
         } else {
             throw new AuthenticationException("Usertoken incorrect");

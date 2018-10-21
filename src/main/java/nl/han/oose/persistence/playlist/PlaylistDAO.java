@@ -26,7 +26,6 @@ public class PlaylistDAO {
 
     public Playlists getAllPlaylists(UserToken userToken) {
         Playlists playlists = new Playlists();
-        int playlistLength = 0;
 
         try (
                 Connection connection = connectionFactory.getConnection();
@@ -44,9 +43,8 @@ public class PlaylistDAO {
                 }
 
                 playlists.getPlaylists().add(new Playlist(id, name, owner, new ArrayList<>()));
-                playlistLength += getLengthOfPlaylist(id);
             }
-            playlists.setLength(playlistLength);
+            playlists.setLength(getLengthOfAllPlaylists());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -54,23 +52,22 @@ public class PlaylistDAO {
         return playlists;
     }
 
-    public int getLengthOfPlaylist(int playlistId) {
-        int playlistLength = 0;
+    public int getLengthOfAllPlaylists() {
+        int playlistsLength = 0;
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(duration) AS playlist_length FROM track WHERE id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(track.duration) AS length_all_playlists FROM track LEFT JOIN tracksInPlaylist ON track.id = tracksInPlaylist.track_id");
         ) {
-            preparedStatement.setInt(1, playlistId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                playlistLength += resultSet.getInt("playlist_length");
+                playlistsLength = resultSet.getInt("length_all_playlists");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return playlistLength;
+        return playlistsLength;
     }
 
     public Tracklist getContentOfPlaylist(int playlistId) {

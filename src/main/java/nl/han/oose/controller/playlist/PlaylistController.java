@@ -17,7 +17,6 @@ public class PlaylistController extends ErrorCheck {
     @Inject
     private PlaylistService playlistService;
 
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPlaylists(@QueryParam("token") String token) {
