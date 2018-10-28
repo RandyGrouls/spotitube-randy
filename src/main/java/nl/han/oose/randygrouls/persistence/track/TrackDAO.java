@@ -19,10 +19,10 @@ public class TrackDAO {
     @Inject
     private ConnectionFactory connectionFactory;
 
-    public Tracklist getAllAvailableTracksForPlaylist(int playlistId) {
+    public Tracklist getAllTracksNotInPlaylist(int playlistId) {
         Tracklist tracklist = new Tracklist();
-        Tracklist songs = getAllAvailableSongsForPlaylist(playlistId);
-        Tracklist videos = getAllAvailableVideosForPlaylist(playlistId);
+        Tracklist songs = getAllSongsForPlaylistDependingOnInPlaylist(playlistId, false);
+        Tracklist videos = getAllVideosForPlaylistDependingOnInPlaylist(playlistId, false);
 
         tracklist.getTracks().addAll(songs.getTracks());
         tracklist.getTracks().addAll(videos.getTracks());
@@ -30,16 +30,38 @@ public class TrackDAO {
         return tracklist;
     }
 
-    public Tracklist getAllAvailableSongsForPlaylist(int playlistId) {
+    public Tracklist getContentOfPlaylist(int playlistId) {
         Tracklist tracklist = new Tracklist();
+        Tracklist songs = getAllSongsForPlaylistDependingOnInPlaylist(playlistId, true);
+        Tracklist videos = getAllVideosForPlaylistDependingOnInPlaylist(playlistId, true);
+
+        tracklist.getTracks().addAll(songs.getTracks());
+        tracklist.getTracks().addAll(videos.getTracks());
+
+        return tracklist;
+    }
+
+    public Tracklist getAllSongsForPlaylistDependingOnInPlaylist(int playlistId, boolean inPlaylist) {
+        Tracklist tracklist = new Tracklist();
+
+        String songsQuery = "";
+        if (inPlaylist) {
+            songsQuery = "SELECT sv.*, tip.offline_available FROM songs_view sv \n" +
+                    "LEFT JOIN tracksInPlaylist tip \n" +
+                    "ON tip.track_id = sv.id \n" +
+                    "AND tip.playlist_id = ? \n" +
+                    "WHERE sv.id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)";
+        } else {
+            songsQuery = "SELECT sv.*, tip.offline_available FROM songs_view sv \n" +
+                    "LEFT JOIN tracksInPlaylist tip \n" +
+                    "ON tip.track_id = sv.id \n" +
+                    "AND tip.playlist_id = ? \n" +
+                    "WHERE sv.id NOT IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)";
+        }
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT sv.*, tip.offline_available FROM songs_view sv\n" +
-                        "        LEFT JOIN tracksInPlaylist tip\n" +
-                        "           ON tip.track_id = sv.id\n" +
-                        "           AND tip.playlist_id = ?\n" +
-                        "WHERE sv.id NOT IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
+                PreparedStatement preparedStatement = connection.prepareStatement(songsQuery);
         ) {
             preparedStatement.setInt(1, playlistId);
             preparedStatement.setInt(2, playlistId);
@@ -64,16 +86,27 @@ public class TrackDAO {
         return tracklist;
     }
 
-    public Tracklist getAllAvailableVideosForPlaylist(int playlistId) {
+    public Tracklist getAllVideosForPlaylistDependingOnInPlaylist(int playlistId, boolean inPlaylist) {
         Tracklist tracklist = new Tracklist();
+
+        String videosQuery = "";
+        if (inPlaylist) {
+            videosQuery = "SELECT vv.*, tip.offline_available FROM videos_view vv \n" +
+                    "LEFT JOIN tracksInPlaylist tip \n" +
+                    "ON tip.track_id = vv.id \n" +
+                    "AND tip.playlist_id = ? \n" +
+                    "WHERE vv.id IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)";
+        } else {
+            videosQuery = "SELECT vv.*, tip.offline_available FROM videos_view vv \n" +
+                    "LEFT JOIN tracksInPlaylist tip \n" +
+                    "ON tip.track_id = vv.id \n" +
+                    "AND tip.playlist_id = ? \n" +
+                    "WHERE vv.id NOT IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)";
+        }
 
         try (
                 Connection connection = connectionFactory.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT vv.*, tip.offline_available FROM videos_view vv\n" +
-                        "        LEFT JOIN tracksInPlaylist tip\n" +
-                        "           ON tip.track_id = vv.id\n" +
-                        "           AND tip.playlist_id = ?\n" +
-                        "WHERE vv.id NOT IN(SELECT track_id FROM tracksInPlaylist WHERE playlist_id = ?)");
+                PreparedStatement preparedStatement = connection.prepareStatement(videosQuery);
         ) {
             preparedStatement.setInt(1, playlistId);
             preparedStatement.setInt(2, playlistId);

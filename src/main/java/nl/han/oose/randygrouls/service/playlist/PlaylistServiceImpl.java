@@ -7,6 +7,7 @@ import nl.han.oose.randygrouls.entity.track.Track;
 import nl.han.oose.randygrouls.entity.track.Tracklist;
 import nl.han.oose.randygrouls.persistence.playlist.PlaylistDAO;
 import nl.han.oose.randygrouls.persistence.token.TokenDAO;
+import nl.han.oose.randygrouls.persistence.track.TrackDAO;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -20,6 +21,9 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Inject
     private TokenDAO tokenDAO;
+
+    @Inject
+    private TrackDAO trackDAO;
 
     @Override
     public Playlists getAllPlaylists(String token) throws AuthenticationException {
@@ -35,7 +39,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     public Tracklist getContentOfPlaylist(String token, int playlistId) throws AuthenticationException {
         UserToken userToken = tokenDAO.getUsertoken(token);
         if (userToken != null && tokenDAO.isTokenValid(userToken)) {
-            return playlistDAO.getContentOfPlaylist(playlistId);
+            return trackDAO.getContentOfPlaylist(playlistId);
         } else {
             throw new AuthenticationException("Usertoken incorrect");
         }
@@ -68,7 +72,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         UserToken userToken = tokenDAO.getUsertoken(token);
         if (userToken != null && tokenDAO.isTokenValid(userToken)) {
             playlistDAO.removeTrackFromPlaylist(playlistId, trackId);
-            return playlistDAO.getContentOfPlaylist(playlistId);
+            return trackDAO.getContentOfPlaylist(playlistId);
         } else {
             throw new AuthenticationException("Usertoken incorrect");
         }
@@ -90,7 +94,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         UserToken userToken = tokenDAO.getUsertoken(token);
         if (userToken != null && tokenDAO.isTokenValid(userToken)) {
             playlistDAO.addTrackToPlaylist(playlistId, track);
-            return playlistDAO.getContentOfPlaylist(playlistId);
+            return trackDAO.getContentOfPlaylist(playlistId);
         } else {
             throw new AuthenticationException("Usertoken incorrect");
         }

@@ -20,7 +20,7 @@ public class TrackServiceImpl implements TrackService {
     public Tracklist getAllAvailableTracksForPlaylist(String token, int playlistId) throws AuthenticationException {
         UserToken userToken = tokenDAO.getUsertoken(token);
         if (userToken != null && tokenDAO.isTokenValid(userToken)) {
-            return trackDAO.getAllAvailableTracksForPlaylist(playlistId);
+            return trackDAO.getAllTracksNotInPlaylist(playlistId);
         } else {
             throw new AuthenticationException("Usertoken incorrect");
         }

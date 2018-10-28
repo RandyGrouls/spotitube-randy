@@ -23,7 +23,7 @@ public class TrackControllerTest {
     @InjectMocks
     private TrackController sut;
 
-    //Tests for getAllAvailableTracksForPlaylist
+    //Tests for getAllTracksNotInPlaylist
     @Test
     public void testStatusBadRequestOnEmptyUsertokenGetAllAvailableTracksForPlaylist() throws AuthenticationException {
         Response response = sut.getAllAvailableTracksForPlaylist("", "");

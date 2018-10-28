@@ -39,7 +39,7 @@ public class TrackServiceTest {
 
         Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
         Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
-        Mockito.when(trackDAO.getAllAvailableTracksForPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+        Mockito.when(trackDAO.getAllTracksNotInPlaylist(Mockito.anyInt())).thenReturn(tracklist);
 
         Assert.assertEquals(tracklist, sut.getAllAvailableTracksForPlaylist("123", 1));
     }

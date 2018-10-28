@@ -7,6 +7,7 @@ import nl.han.oose.randygrouls.entity.track.Track;
 import nl.han.oose.randygrouls.entity.track.Tracklist;
 import nl.han.oose.randygrouls.persistence.playlist.PlaylistDAO;
 import nl.han.oose.randygrouls.persistence.token.TokenDAO;
+import nl.han.oose.randygrouls.persistence.track.TrackDAO;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,9 @@ public class PlaylistServiceTest {
 
     @Mock
     private TokenDAO tokenDAO;
+
+    @Mock
+    private TrackDAO trackDAO;
 
     @InjectMocks
     private PlaylistServiceImpl sut;
@@ -71,7 +75,7 @@ public class PlaylistServiceTest {
 
         Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
         Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
-        Mockito.when(playlistDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+        Mockito.when(trackDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
 
         Assert.assertEquals(tracklist, sut.getContentOfPlaylist("123", 1));
     }
@@ -150,7 +154,7 @@ public class PlaylistServiceTest {
 
         Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
         Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
-        Mockito.when(playlistDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+        Mockito.when(trackDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
 
         Assert.assertEquals(tracklist, sut.removeTrackFromPlaylist("123", 1, 1));
     }
@@ -202,7 +206,7 @@ public class PlaylistServiceTest {
 
         Mockito.when(tokenDAO.getUsertoken(Mockito.any())).thenReturn(userToken);
         Mockito.when(tokenDAO.isTokenValid(Mockito.any(UserToken.class))).thenReturn(true);
-        Mockito.when(playlistDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
+        Mockito.when(trackDAO.getContentOfPlaylist(Mockito.anyInt())).thenReturn(tracklist);
 
         Assert.assertEquals(tracklist, sut.addTrackToPlaylist("123", 1, new Track()));
     }
